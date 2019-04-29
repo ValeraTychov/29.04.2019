@@ -3,8 +3,22 @@ using System.Text;
 
 namespace StringExtension
 {
+    /// <summary>
+    /// Provides the functionality for converting strings.
+    /// </summary>
     public class StringConverter
     {
+        /// <summary>
+        /// Collects odd characters of the specified string and puts it in the begininig
+        /// of the string, even characters stays a the ending. Repeats <paramref name="count"/>
+        /// times.
+        /// </summary>
+        /// <param name="source">An source <see cref="string"/> to convert.</param>
+        /// <param name="count">Number of repetitions.</param>
+        /// <returns>Converted <see cref="string"/>.</returns>
+        /// <exception cref="ArgumentNullException">Throws if <paramref name="source"/> is null.</exception>
+        /// <exception cref="ArgumentException">Throws if <paramref name="source"/> is <see cref="string.Empty"/></exception>
+        /// <exception cref="ArgumentOutOfRangeException">Throws if <paramref name="count"/> is not positive.</exception>
         public string Convert(string source, int count)
         {
             if (source is null)
@@ -22,8 +36,14 @@ namespace StringExtension
                 throw new ArgumentOutOfRangeException("Argument less than 1.", nameof(count));
             }
 
-            count = count % CalculateMaxConvertsCount(source.Length);
+            if (source.Length < 3)
+            {
+                return source;
+            }
+
             StringBuilder sb = new StringBuilder(source);
+
+            count = count % CalculateMaxPossibleConvertationsCount(source.Length);
 
             for (int i = 1; i < source.Length; i++)
             {
@@ -33,7 +53,7 @@ namespace StringExtension
             return sb.ToString();
         }
 
-        private int CalculateMaxConvertsCount(int length)
+        private int CalculateMaxPossibleConvertationsCount(int length)
         {
             if ((length & 1) == 0)
             {
@@ -43,6 +63,7 @@ namespace StringExtension
             int result = 1;
             int mid = (length + 1) >> 1;
             int position = length - 1;
+
             while (position != length)
             {
                 position = position > mid ? (position - mid) << 1 : (position << 1) - 1;
@@ -52,18 +73,18 @@ namespace StringExtension
             return result;
         }
 
-	    private int GetNewPosition(int oldPosition, int length, int count)
-	    {
-		    int mid = ((length - 1) >> 1) + 1;
-		    int position = oldPosition;
-
+        private int GetNewPosition(int oldPosition, int length, int count)
+        {
+            int mid = (length + 1) >> 1;
+            int newPosition = oldPosition;
+            
             for (int i = 0; i < count; i++)
-		    {
-			    position = (position & 1) != 0 ? mid + (position >> 1) : (position) >> 1;
-			
-		    }
-
-		    return position;
-	    }
+            {
+                newPosition = (newPosition & 1) != 0 ? mid + (newPosition >> 1) : newPosition >> 1;
+            
+            }
+            
+            return newPosition;
+        }
     }
 }
