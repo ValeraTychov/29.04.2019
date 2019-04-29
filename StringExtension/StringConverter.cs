@@ -7,32 +7,33 @@ namespace StringExtension
     {
         public string Convert(string source, int count)
         {
-            string result = source;
-
-            count = count % CalculateMaxConverts(source.Length);
-
-            for (int i = 0; i < count; i++)
+            if (source is null)
             {
-                result = Convert(result);
+                throw new ArgumentNullException(nameof(source));
             }
 
-            return result;
-        }
-
-        private string Convert(string source)
-        {
-            StringBuilder first = new StringBuilder(source.Length >> 1);
-            StringBuilder second = new StringBuilder(source.Length >> 1);
-            for (int i = 0; i < source.Length; i++)
+            if (source.Trim().Length < 1)
             {
-                first.Append(source[i++]);
-                second.Append(source[i]);
+                throw new ArgumentException("Argument is empty string.", nameof(source));
             }
 
-            return first.Append(second).ToString();
+            if (count < 1)
+            {
+                throw new ArgumentOutOfRangeException("Argument less than 1.", nameof(count));
+            }
+
+            count = count % CalculateMaxConvertsCount(source.Length);
+            StringBuilder sb = new StringBuilder(source);
+
+            for (int i = 1; i < source.Length; i++)
+            {
+                sb[GetNewPosition(i, source.Length, count)] = source[i];
+            }
+
+            return sb.ToString();
         }
 
-        private int CalculateMaxConverts(int length)
+        private int CalculateMaxConvertsCount(int length)
         {
             if ((length & 1) == 0)
             {
@@ -40,15 +41,29 @@ namespace StringExtension
             }
 
             int result = 1;
-            int mid = (length + 1) / 2;
+            int mid = (length + 1) >> 1;
             int position = length - 1;
             while (position != length)
             {
-                position = position > mid ? (position - mid) * 2 : position * 2 - 1;
+                position = position > mid ? (position - mid) << 1 : (position << 1) - 1;
                 result++;
             }
 
             return result;
         }
+
+	    private int GetNewPosition(int oldPosition, int length, int count)
+	    {
+		    int mid = ((length - 1) >> 1) + 1;
+		    int position = oldPosition;
+
+            for (int i = 0; i < count; i++)
+		    {
+			    position = (position & 1) != 0 ? mid + (position >> 1) : (position) >> 1;
+			
+		    }
+
+		    return position;
+	    }
     }
 }
