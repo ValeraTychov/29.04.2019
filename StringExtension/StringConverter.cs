@@ -55,18 +55,20 @@ namespace StringExtension
 
         private int CalculateMaxPossibleConvertationsCount(int length)
         {
+            // Even length strings have the same convertations count as previous odd length ones.
             if ((length & 1) == 0)
             {
                 length--;
             }
 
             int result = 1;
-            int mid = (length + 1) >> 1;
-            int position = length - 1;
 
-            while (position != length)
+            int endPosition = length - 1;
+            int position = GetNewPosition(endPosition, length, 1);
+
+            while (position != endPosition)
             {
-                position = position > mid ? (position - mid) << 1 : (position << 1) - 1;
+                position = GetNewPosition(position, length, 1);
                 result++;
             }
 
@@ -81,7 +83,6 @@ namespace StringExtension
             for (int i = 0; i < count; i++)
             {
                 newPosition = (newPosition & 1) != 0 ? mid + (newPosition >> 1) : newPosition >> 1;
-            
             }
             
             return newPosition;
