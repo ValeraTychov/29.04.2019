@@ -41,16 +41,16 @@ namespace StringExtension
                 return source;
             }
 
-            StringBuilder sb = new StringBuilder(source);
+            char[] result = new char[source.Length];
 
             count = count % CalculateMaxPossibleConvertationsCount(source.Length);
 
-            for (int i = 1; i < source.Length; i++)
+            for (int i = 0; i < source.Length; i++)
             {
-                sb[GetNewPosition(i, source.Length, count)] = source[i];
+                result[GetNewPosition(i, source.Length, count)] = source[i];
             }
 
-            return sb.ToString();
+            return new string(result);
         }
 
         private int CalculateMaxPossibleConvertationsCount(int length)
